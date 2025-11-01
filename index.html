@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎶 مشغل الصوت</title>
+<style>
+  body {
+    margin: 0;
+    background: #0f0f0f;
+    color: #fff;
+    font-family: "Cairo", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .player-container {
+    width: 90%;
+    max-width: 700px;
+    background: #181818;
+    border-radius: 15px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .btns {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  button {
+    background: #202020;
+    border: none;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    background: #3b82f6;
+  }
+
+  .progress-container {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    background: #2e2e2e;
+    border-radius: 5px;
+    margin: 15px 0;
+    cursor: pointer;
+  }
+
+  .progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    border-radius: 5px;
+  }
+
+  .time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #aaa;
+  }
+
+  .volume {
+    width: 100px;
+  }
+
+  audio {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+  <div class="player-container">
+    <div class="title">SOUNDS 😻</div>
+    <audio id="audio" src="song.mp3"></audio>
+
+    <div class="controls">
+      <div class="btns">
+        <button id="playPause">⏯️</button>
+        <button id="speed">⚡×1</button>
+        <a id="download" href="song.mp3" download="song.mp3">
+          <button>⬇️</button>
+        </a>
+      </div>
+      <input type="range" id="volume" class="volume" min="0" max="1" step="0.01" value="1">
+    </div>
+
+    <div class="progress-container" id="progress-container">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="time">
+      <span id="currentTime">0:00</span>
+      <span id="duration">0:00</span>
+    </div>
+  </div>
+
+<script>
+const audio = document.getElementById("audio");
+const playPause = document.getElementById("playPause");
+const speedBtn = document.getElementById("speed");
+const progress = document.getElementById("progress");
+const progressContainer = document.getElementById("progress-container");
+const currentTimeEl = document.getElementById("currentTime");
+const durationEl = document.getElementById("duration");
+const volumeSlider = document.getElementById("volume");
+
+let speed = 1;
+
+playPause.addEventListener("click", () => {
+  if (audio.paused) {
+    audio.play();
+    playPause.textContent = "⏸️";
+  } else {
+    audio.pause();
+    playPause.textContent = "▶️";
+  }
+});
+
+audio.addEventListener("timeupdate", updateProgress);
+audio.addEventListener("loadedmetadata", () => {
+  durationEl.textContent = formatTime(audio.duration);
+});
+
+progressContainer.addEventListener("click", setProgress);
+
+speedBtn.addEventListener("click", () => {
+  if (speed === 1) speed = 1.5;
+  else if (speed === 1.5) speed = 2;
+  else speed = 1;
+  audio.playbackRate = speed;
+  speedBtn.textContent = `⚡×${speed}`;
+});
+
+volumeSlider.addEventListener("input", (e) => {
+  audio.volume = e.target.value;
+});
+
+function updateProgress() {
+  const progressPercent = (audio.currentTime / audio.duration) * 100;
+  progress.style.width = `${progressPercent}%`;
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+}
+
+function setProgress(e) {
+  const width = this.clientWidth;
+  const clickX = e.offsetX;
+  const duration = audio.duration;
+  audio.currentTime = (clickX / width) * duration;
+}
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${minutes}:${secs < 10 ? "0" + secs : secs}`;
+}
+</script>
+
+</body>
+</html>
