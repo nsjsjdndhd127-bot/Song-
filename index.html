@@ -100,7 +100,7 @@ playBtn.addEventListener('click',()=>{audio.paused?audio.play():audio.pause();})
 // السرعة
 speedBtn.addEventListener('click',()=>{
   if(speedMenu.style.opacity==='1'){speedMenu.style.opacity='0';speedMenu.style.top='150%';}
-  else{speedMenu.style.opacity='1';speedMenu.style.top='35px';}
+  else{speedMenu.style.opacity='1';speedMenu.style.top='-35px';}
 });
 speedOptions.forEach(option=>{
   option.addEventListener('click',()=>{
@@ -108,7 +108,7 @@ speedOptions.forEach(option=>{
     audio.playbackRate=spd;
     speedBtn.textContent=`⚡ السرعة ×${spd}`;
     speedMenu.style.opacity='0';
-    speedMenu.style.top='-150%';
+    speedMenu.style.top='150%';
     speedOptions.forEach(o=>o.classList.remove('active'));
     option.classList.add('active');
   });
