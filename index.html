@@ -3,114 +3,186 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎶 مشغل الصوت</title>
+<title>🎵 مشغل صوت احترافي</title>
 <style>
-  body {
-    margin: 0;
-    background: #0f0f0f;
-    color: #fff;
-    font-family: "Cairo", sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-
-  .player-container {
-    width: 90%;
-    max-width: 700px;
-    background: #181818;
-    border-radius: 15px;
-    box-shadow: 0 4px 30px rgba(0,0,0,0.6);
-    padding: 20px;
-  }
-
-  .title {
-    font-size: 20px;
-    text-align: center;
-    margin-bottom: 15px;
-  }
-
-  .controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .btns {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  button {
-    background: #202020;
-    border: none;
-    color: #fff;
-    padding: 10px 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: 0.3s;
-  }
-
-  button:hover {
-    background: #3b82f6;
-  }
-
-  .progress-container {
-    position: relative;
-    width: 100%;
-    height: 8px;
-    background: #2e2e2e;
-    border-radius: 5px;
-    margin: 15px 0;
-    cursor: pointer;
-  }
-
-  .progress {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #3b82f6, #60a5fa);
-    border-radius: 5px;
-  }
-
-  .time {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    color: #aaa;
-  }
-
-  .volume {
-    width: 100px;
-  }
-
-  audio {
-    display: none;
-  }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
+body{
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: linear-gradient(270deg,#ff416c,#ff4b2b,#1f4037,#99f2c8);
+  background-size: 800% 800%;
+  animation: gradientBG 15s ease infinite;
+  color:#fff;
+}
+@keyframes gradientBG{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+.player{
+  width:90%;
+  max-width:600px;
+  background: rgba(0,0,0,0.7);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 0 30px rgba(0,0,0,0.6);
+}
+.title{text-align:center;font-size:22px;margin-bottom:10px;color:#60a5fa;}
+audio{display:none;}
+.controls{display:flex;justify-content:space-between;align-items:center;margin-top:15px;position:relative;flex-wrap:wrap;}
+button{
+  background:#2563eb;
+  border:none;
+  color:white;
+  padding:10px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:15px;
+  transition:0.2s;
+}
+button:hover{background:#1d4ed8;transform:scale(1.05);}
+#speedMenu{position:absolute;top:-150%;left:0;background:#111827;border-radius:10px;display:flex;flex-direction:column;z-index:10;box-shadow:0 5px 15px rgba(0,0,0,0.5);opacity:0;transition:0.3s;}
+#speedMenu div{padding:8px 15px;cursor:pointer;}
+#speedMenu div:hover{background:#3b82f6;color:white;}
+#speedMenu .active{background:#3b82f6;color:white;}
+.progress-container{
+  width:100%;
+  height:10px;
+  background:#2e2e2e;
+  border-radius:5px;
+  margin-top:15px;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+}
+.progress{
+  width:0%;
+  height:100%;
+  background: linear-gradient(90deg,#ff416c,#ff4b2b,#1f4037,#99f2c8);
+  border-radius:5px;
+  transition: width 0.1s linear;
+  animation: moveColors 5s linear infinite;
+}
+@keyframes moveColors{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+.progress-dot{
+  position:absolute;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:16px;
+  height:16px;
+  background:#fff;
+  border-radius:50%;
+  cursor:pointer;
+}
+.time{display:flex;justify-content:space-between;font-size:14px;color:#aaa;margin-top:5px;}
 </style>
 </head>
 <body>
 
-  <div class="player-container">
-    <div class="title">SOUNDS 😻</div>
-    <audio id="audio" src="Audio 3.mp3"></audio>
+<div class="player">
+  <div class="title">🎶 مشغل الأغنية</div>
+  <audio id="audio" src="song.mp3"></audio>
 
-    <div class="controls">
-      <div class="btns">
-        <button id="playPause">⏯️</button>
-        <button id="speed">⚡×1</button>
-        <a id="download" href="song.mp3" download="song.mp3">
-          <button>⬇️</button>
-        </a>
-      </div>
-      <input type="range" id="volume" class="volume" min="0" max="1" step="0.01" value="1">
+  <div class="controls">
+    <button id="speedBtn">⚡ السرعة ×1</button>
+    <a href="song.mp3" download><button>⬇️ تحميل</button></a>
+    <div id="speedMenu">
+      <div data-speed="0.5">0.5</div>
+      <div data-speed="0.75">0.75</div>
+      <div data-speed="1" class="active">1</div>
+      <div data-speed="1.25">1.25</div>
+      <div data-speed="1.5">1.5</div>
+      <div data-speed="2">2</div>
     </div>
+  </div>
 
-    <div class="progress-container" id="progress-container">
-      <div class="progress" id="progress"></div>
-    </div>
+  <div class="progress-container" id="progress-container">
+    <div class="progress" id="progress"></div>
+    <div class="progress-dot" id="progress-dot"></div>
+  </div>
+  <div class="time">
+    <span id="currentTime">0:00</span>
+    <span id="duration">0:00</span>
+  </div>
+</div>
+
+<script>
+const audio=document.getElementById('audio');
+const speedBtn=document.getElementById('speedBtn');
+const speedMenu=document.getElementById('speedMenu');
+const speedOptions=speedMenu.querySelectorAll('div');
+const progress=document.getElementById('progress');
+const progressContainer=document.getElementById('progress-container');
+const progressDot=document.getElementById('progress-dot');
+const currentTimeEl=document.getElementById('currentTime');
+const durationEl=document.getElementById('duration');
+
+// السرعة
+speedBtn.addEventListener('click',()=>{
+  if(speedMenu.style.opacity==='1'){speedMenu.style.opacity='0';speedMenu.style.top='-150%';}
+  else{speedMenu.style.opacity='1';speedMenu.style.top='35px';}
+});
+speedOptions.forEach(option=>{
+  option.addEventListener('click',()=>{
+    const spd=parseFloat(option.dataset.speed);
+    audio.playbackRate=spd;
+    speedBtn.textContent=`⚡ السرعة ×${spd}`;
+    speedMenu.style.opacity='0';
+    speedMenu.style.top='-150%';
+    speedOptions.forEach(o=>o.classList.remove('active'));
+    option.classList.add('active');
+  });
+});
+
+// شريط التقدم
+function formatTime(s){const m=Math.floor(s/60);const sec=Math.floor(s%60);return`${m}:${sec<10?'0'+sec:sec}`;}
+audio.addEventListener('loadedmetadata',()=>{durationEl.textContent=formatTime(audio.duration);});
+audio.addEventListener('timeupdate',updateProgress);
+function updateProgress(){
+  const percent=(audio.currentTime/audio.duration)*100;
+  progress.style.width=`${percent}%`;
+  progressDot.style.left=`${percent}%`;
+  currentTimeEl.textContent=formatTime(audio.currentTime);
+}
+let dragging=false;
+progressDot.addEventListener('mousedown',()=>dragging=true);
+document.addEventListener('mouseup',()=>dragging=false);
+document.addEventListener('mousemove',(e)=>{
+  if(!dragging) return;
+  const rect=progressContainer.getBoundingClientRect();
+  let x=e.clientX-rect.left;
+  if(x<0)x=0;if(x>rect.width)x=rect.width;
+  const percent=(x/rect.width)*100;
+  progress.style.width=`${percent}%`;
+  progressDot.style.left=`${percent}%`;
+  audio.currentTime=(percent/100)*audio.duration;
+});
+progressContainer.addEventListener('click',(e)=>{
+  const rect=progressContainer.getBoundingClientRect();
+  let x=e.clientX-rect.left;
+  const percent=(x/rect.width)*100;
+  progress.style.width=`${percent}%`;
+  progressDot.style.left=`${percent}%`;
+  audio.currentTime=(percent/100)*audio.duration;
+});
+
+// زيادة الصوت 250%
+const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+const source=audioCtx.createMediaElementSource(audio);
+const gainNode=audioCtx.createGain();
+gainNode.gain.value=2.5;
+source.connect(gainNode).connect(audioCtx.destination);
+audio.addEventListener('play',()=>{if(audioCtx.state==='suspended') audioCtx.resume();});
+</script>
+
+</body>
+</html>    </div>
 
     <div class="time">
       <span id="currentTime">0:00</span>
