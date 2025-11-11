@@ -3,45 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎵 مشغل صوت احترافي</title>
+<title>🎵 مشغل صوت قابل للسحب</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Cairo',sans-serif;}
-body{
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background: linear-gradient(270deg,#ff416c,#ff4b2b,#1f4037,#99f2c8);
-  background-size: 800% 800%;
-  animation: gradientBG 15s ease infinite;
-  color:#fff;
-}
-@keyframes gradientBG{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
-.player{
-  width:90%;
-  max-width:600px;
-  background: rgba(0,0,0,0.7);
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 0 30px rgba(0,0,0,0.6);
-}
+body{height:100vh;display:flex;justify-content:center;align-items:center;
+      background: linear-gradient(270deg,#ff416c,#ff4b2b,#1f4037,#99f2c8);
+      background-size: 800% 800%;
+      animation: gradientBG 15s ease infinite;color:#fff;}
+@keyframes gradientBG{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
+.player{width:90%;max-width:600px;background: rgba(0,0,0,0.7);padding:25px;border-radius:20px;box-shadow:0 0 30px rgba(0,0,0,0.6);}
 .title{text-align:center;font-size:22px;margin-bottom:10px;color:#60a5fa;}
 audio{display:none;}
 .controls{display:flex;justify-content:space-between;align-items:center;margin-top:15px;position:relative;flex-wrap:wrap;}
-button{
-  background:#2563eb;
-  border:none;
-  color:white;
-  padding:10px 20px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:15px;
-  transition:0.2s;
-}
+button{background:#2563eb;border:none;color:white;padding:10px 20px;border-radius:10px;cursor:pointer;font-size:15px;transition:0.2s;}
 button:hover{background:#1d4ed8;transform:scale(1.05);}
 #speedMenu{position:absolute;top:-150%;left:0;background:#111827;border-radius:10px;display:flex;flex-direction:column;z-index:10;box-shadow:0 5px 15px rgba(0,0,0,0.5);opacity:0;transition:0.3s;}
 #speedMenu div{padding:8px 15px;cursor:pointer;}
@@ -53,8 +27,6 @@ button:hover{background:#1d4ed8;transform:scale(1.05);}
   background:#2e2e2e;
   border-radius:5px;
   margin-top:15px;
-  cursor:pointer;
-  overflow:hidden;
   position:relative;
 }
 .progress{
@@ -65,11 +37,7 @@ button:hover{background:#1d4ed8;transform:scale(1.05);}
   transition: width 0.1s linear;
   animation: moveColors 5s linear infinite;
 }
-@keyframes moveColors{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
+@keyframes moveColors{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 .progress-dot{
   position:absolute;
   top:50%;
@@ -90,8 +58,10 @@ button:hover{background:#1d4ed8;transform:scale(1.05);}
   <audio id="audio" src="song.mp3"></audio>
 
   <div class="controls">
+    <button id="playBtn">⏯️ تشغيل/إيقاف</button>
     <button id="speedBtn">⚡ السرعة ×1</button>
     <a href="song.mp3" download><button>⬇️ تحميل</button></a>
+
     <div id="speedMenu">
       <div data-speed="0.5">0.5</div>
       <div data-speed="0.75">0.75</div>
@@ -114,6 +84,7 @@ button:hover{background:#1d4ed8;transform:scale(1.05);}
 
 <script>
 const audio=document.getElementById('audio');
+const playBtn=document.getElementById('playBtn');
 const speedBtn=document.getElementById('speedBtn');
 const speedMenu=document.getElementById('speedMenu');
 const speedOptions=speedMenu.querySelectorAll('div');
@@ -122,6 +93,9 @@ const progressContainer=document.getElementById('progress-container');
 const progressDot=document.getElementById('progress-dot');
 const currentTimeEl=document.getElementById('currentTime');
 const durationEl=document.getElementById('duration');
+
+// تشغيل/إيقاف
+playBtn.addEventListener('click',()=>{audio.paused?audio.play():audio.pause();});
 
 // السرعة
 speedBtn.addEventListener('click',()=>{
@@ -140,7 +114,7 @@ speedOptions.forEach(option=>{
   });
 });
 
-// شريط التقدم
+// شريط التقدم draggable
 function formatTime(s){const m=Math.floor(s/60);const sec=Math.floor(s%60);return`${m}:${sec<10?'0'+sec:sec}`;}
 audio.addEventListener('loadedmetadata',()=>{durationEl.textContent=formatTime(audio.duration);});
 audio.addEventListener('timeupdate',updateProgress);
@@ -163,92 +137,14 @@ document.addEventListener('mousemove',(e)=>{
   progressDot.style.left=`${percent}%`;
   audio.currentTime=(percent/100)*audio.duration;
 });
-progressContainer.addEventListener('click',(e)=>{
-  const rect=progressContainer.getBoundingClientRect();
-  let x=e.clientX-rect.left;
-  const percent=(x/rect.width)*100;
-  progress.style.width=`${percent}%`;
-  progressDot.style.left=`${percent}%`;
-  audio.currentTime=(percent/100)*audio.duration;
-});
 
-// زيادة الصوت 250%
+// صوت 250%
 const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
 const source=audioCtx.createMediaElementSource(audio);
 const gainNode=audioCtx.createGain();
 gainNode.gain.value=2.5;
 source.connect(gainNode).connect(audioCtx.destination);
 audio.addEventListener('play',()=>{if(audioCtx.state==='suspended') audioCtx.resume();});
-</script>
-
-</body>
-</html>    </div>
-
-    <div class="time">
-      <span id="currentTime">0:00</span>
-      <span id="duration">0:00</span>
-    </div>
-  </div>
-
-<script>
-const audio = document.getElementById("audio");
-const playPause = document.getElementById("playPause");
-const speedBtn = document.getElementById("speed");
-const progress = document.getElementById("progress");
-const progressContainer = document.getElementById("progress-container");
-const currentTimeEl = document.getElementById("currentTime");
-const durationEl = document.getElementById("duration");
-const volumeSlider = document.getElementById("volume");
-
-let speed = 1;
-
-playPause.addEventListener("click", () => {
-  if (audio.paused) {
-    audio.play();
-    playPause.textContent = "⏸️";
-  } else {
-    audio.pause();
-    playPause.textContent = "▶️";
-  }
-});
-
-audio.addEventListener("timeupdate", updateProgress);
-audio.addEventListener("loadedmetadata", () => {
-  durationEl.textContent = formatTime(audio.duration);
-});
-
-progressContainer.addEventListener("click", setProgress);
-
-speedBtn.addEventListener("click", () => {
-  if (speed === 1) speed = 1.5;
-  else if (speed === 1.5) speed = 2;
-  else speed = 1;
-  audio.playbackRate = speed;
-  speedBtn.textContent = `⚡×${speed}`;
-});
-
-volumeSlider.addEventListener("input", (e) => {
-  audio.volume = e.target.value;
-});
-
-function updateProgress() {
-  const progressPercent = (audio.currentTime / audio.duration) * 100;
-  progress.style.width = `${progressPercent}%`;
-  currentTimeEl.textContent = formatTime(audio.currentTime);
-}
-
-function setProgress(e) {
-  const width = this.clientWidth;
-  const clickX = e.offsetX;
-  const duration = audio.duration;
-  audio.currentTime = (clickX / width) * duration;
-}
-
-function formatTime(seconds) {
-  const minutes = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${minutes}:${secs < 10 ? "0" + secs : secs}`;
-}
 </script>
 
 </body>
