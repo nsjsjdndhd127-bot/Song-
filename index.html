@@ -11,18 +11,9 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background: radial-gradient(circle, red, orange, yellow, green, blue, indigo, violet);
-  background-size: 200% 200%;
-  animation: explodeColors 0.1s linear infinite;
+  background: #111827; /* خلفية ثابتة للصفحة */
   color:#fff;
 }
-
-@keyframes explodeColors{
-  0% {background-position: 50% 50%; transform: scale(1);}
-  50% {background-position: 50% 50%; transform: scale(1.5);}
-  100% {background-position: 50% 50%; transform: scale(1);}
-}
-
 .player{width:90%;max-width:600px;background: rgba(0,0,0,0.7);padding:25px;border-radius:20px;box-shadow:0 0 30px rgba(0,0,0,0.6);}
 .title{text-align:center;font-size:22px;margin-bottom:10px;color:#60a5fa;}
 audio{display:none;}
@@ -44,15 +35,15 @@ button:hover{background:#1d4ed8;transform:scale(1.05);}
 .progress{
   width:0%;
   height:100%;
-  background: linear-gradient(90deg,#ff416c,#ff4b2b,#1f4037,#99f2c8);
+  background: linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet);
   border-radius:5px;
-  transition: width 0.1s linear;
-  animation: moveColors 5s linear infinite;
+  transition: width 0.05s linear;
+  background-size: 800% 100%;
+  animation: moveColors 0.1s linear infinite; /* يتحرك بسرعة هائلة */
 }
 @keyframes moveColors{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
+  0%{background-position:0% 0%;}
+  100%{background-position:100% 0%;}
 }
 .progress-dot{
   position:absolute;
@@ -127,44 +118,6 @@ speedOptions.forEach(option=>{
     speedMenu.style.top='-150%';
     speedOptions.forEach(o=>o.classList.remove('active'));
     option.classList.add('active');
-  });
-});
-
-// شريط التقدم draggable
-function formatTime(s){const m=Math.floor(s/60);const sec=Math.floor(s%60);return`${m}:${sec<10?'0'+sec:sec}`;}
-audio.addEventListener('loadedmetadata',()=>{durationEl.textContent=formatTime(audio.duration);});
-audio.addEventListener('timeupdate',updateProgress);
-function updateProgress(){
-  const percent=(audio.currentTime/audio.duration)*100;
-  progress.style.width=`${percent}%`;
-  progressDot.style.left=`${percent}%`;
-  currentTimeEl.textContent=formatTime(audio.currentTime);
-}
-let dragging=false;
-progressDot.addEventListener('mousedown',()=>dragging=true);
-document.addEventListener('mouseup',()=>dragging=false);
-document.addEventListener('mousemove',(e)=>{
-  if(!dragging) return;
-  const rect=progressContainer.getBoundingClientRect();
-  let x=e.clientX-rect.left;
-  if(x<0)x=0;if(x>rect.width)x=rect.width;
-  const percent=(x/rect.width)*100;
-  progress.style.width=`${percent}%`;
-  progressDot.style.left=`${percent}%`;
-  audio.currentTime=(percent/100)*audio.duration;
-});
-
-// صوت 250%
-const audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-const source=audioCtx.createMediaElementSource(audio);
-const gainNode=audioCtx.createGain();
-gainNode.gain.value=2.5;
-source.connect(gainNode).connect(audioCtx.destination);
-audio.addEventListener('play',()=>{if(audioCtx.state==='suspended') audioCtx.resume();});
-</script>
-
-</body>
-</html>    option.classList.add('active');
   });
 });
 
